@@ -1,0 +1,19 @@
+[workspace.package]
+name = "raft-merkle"
+version = "0.1.0"
+edition = "2024"
+authors = [
+  "Kevin Sheth <kevinsheth25@gmail.com>"
+]
+categories = ["algorithms", "data-structures", "distributed-systems"]
+description = "Raft consensus with Merkle verification"
+license = "MIT OR Apache-2.0"
+
+[workspace]
+
+members = [
+  "raft-merkle",
+  "example-server"
+]
+
+  resolver = "2"
