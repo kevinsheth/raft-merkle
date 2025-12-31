@@ -2,3 +2,9 @@
 name = "raft-merkle"
 version.workspace = true
 edition.workspace = true
+
+[dependencies]
+openraft = "0.9.21"
+serde = "1.0.228"
+
+

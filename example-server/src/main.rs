@@ -1,4 +1,5 @@
 use axum::{Router, routing::get};
+use openraft::Config;
 
 #[tokio::main]
 async fn main() {
