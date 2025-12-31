@@ -4,6 +4,8 @@ use std::io::Cursor;
 use serde::Deserialize;
 use serde::Serialize;
 
+pub type NodeId = u64;
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum Request {
     Append { entry: String },

@@ -1,5 +1,18 @@
 use axum::{Router, routing::get};
-use openraft::Config;
+use openraft::{Config, NodeId};
+
+pub mod app;
+
+pub async fn start_raft_node(node_id: NodeId, http_addr: String) -> std::io::Result<()> {
+    let config = Config {
+        heartbeat_interval: 500,
+        election_timeout_min: 1500,
+        election_timeout_max: 3000,
+        ..Default::default()
+    };
+
+    Ok(())
+}
 
 #[tokio::main]
 async fn main() {
