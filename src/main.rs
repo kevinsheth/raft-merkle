@@ -250,7 +250,7 @@ fn on_ready(
     }
     let store = raft_group.raft.raft_log.store.clone();
 
-    // Get the `Ready` with `RawNode::ready` interface.
+    // Get the `Ready` with `MerkleNode::ready` interface.
     let mut ready = raft_group.ready();
 
     let handle_messages = |msgs: Vec<Message>| {
@@ -270,7 +270,7 @@ fn on_ready(
         handle_messages(ready.take_messages());
     }
 
-    // Apply the snapshot. It's necessary because in `RawNode::advance` we stabilize the snapshot.
+    // Apply the snapshot. It's necessary because in `MerkleNode::advance` we stabilize the snapshot.
     if *ready.snapshot() != Snapshot::default() {
         let s = ready.snapshot().clone();
         if let Err(e) = store.wl().apply_snapshot(s) {
@@ -315,7 +315,7 @@ fn on_ready(
     // Apply all committed entries.
     handle_committed_entries(raft_group, ready.take_committed_entries());
 
-    // Persistent raft logs. It's necessary because in `RawNode::advance` we stabilize
+    // Persistent raft logs. It's necessary because in `MerkleNode::advance` we stabilize
     // raft logs to the latest position.
     if let Err(e) = store.wl().append(ready.entries()) {
         error!(
@@ -335,7 +335,7 @@ fn on_ready(
         handle_messages(ready.take_persisted_messages());
     }
 
-    // Call `RawNode::advance` interface to update position flags in the raft.
+    // Call `MerkleNode::advance` interface to update position flags in the raft.
     let mut light_rd = raft_group.advance(ready);
     // Update commit index.
     if let Some(commit) = light_rd.commit_index() {
