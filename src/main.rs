@@ -12,8 +12,8 @@ use std::time::{Duration, Instant};
 use std::{str, thread};
 
 use protobuf::Message as PbMessage;
+use raft::prelude::*;
 use raft::storage::MemStorage;
-use raft::{StateRole, prelude::*};
 use raft_merkle::node::MerkleNode;
 
 use regex::Regex;
@@ -91,7 +91,7 @@ fn main() {
                 }
 
                 // Let the leader pick pending proposals from the global queue.
-                if raft_group.raft.state == StateRole::Leader {
+                if raft_group.is_leader() {
                     // Handle new proposals.
                     let mut proposals = proposals.lock().unwrap();
                     for p in proposals.iter_mut().skip_while(|p| p.proposed > 0) {
@@ -248,7 +248,7 @@ fn on_ready(
     if !raft_group.has_ready() {
         return;
     }
-    let store = raft_group.raft.raft_log.store.clone();
+    let store = raft_group.store();
 
     // Get the `Ready` with `MerkleNode::ready` interface.
     let mut ready = raft_group.ready();
@@ -304,7 +304,7 @@ fn on_ready(
                         kv_pairs.insert(caps[1].parse().unwrap(), caps[2].to_string());
                     }
                 }
-                if rn.raft.state == StateRole::Leader {
+                if rn.is_leader() {
                     // The leader should response to the clients, tell them if their proposals
                     // succeeded or not.
                     let proposal = proposals.lock().unwrap().pop_front().unwrap();
@@ -401,7 +401,7 @@ impl Proposal {
 }
 
 fn propose(raft_group: &mut MerkleNode<MemStorage>, proposal: &mut Proposal) {
-    let last_index1 = raft_group.raft.raft_log.last_index() + 1;
+    let last_index1 = raft_group.last_index() + 1;
     if let Some((ref key, ref value)) = proposal.normal {
         let data = format!("put {} {}", key, value).into_bytes();
         let _ = raft_group.propose(vec![], data);
@@ -412,7 +412,7 @@ fn propose(raft_group: &mut MerkleNode<MemStorage>, proposal: &mut Proposal) {
         unimplemented!();
     }
 
-    let last_index2 = raft_group.raft.raft_log.last_index() + 1;
+    let last_index2 = raft_group.last_index() + 1;
     if last_index2 == last_index1 {
         // Propose failed, don't forget to respond to the client.
         proposal.propose_success.send(false).unwrap();
