@@ -1,18 +1,13 @@
-[workspace.package]
+[package]
+name = "raft-merkle"
 version = "0.1.0"
 edition = "2024"
-authors = [
-  "Kevin Sheth <kevinsheth25@gmail.com>"
-]
-categories = ["algorithms", "data-structures", "distributed-systems"]
-description = "Raft consensus with Merkle verification"
-license = "MIT OR Apache-2.0"
 
-[workspace]
-
-members = [
-  "raft-merkle",
-  "example-server"
-]
-
-  resolver = "2"
+[dependencies]
+protobuf = "2.28.0"
+raft = "0.7.0"
+raft-proto = "0.7.0"
+regex = "1.12.2"
+slog = "2.8.2"
+slog-async = "2.8.0"
+slog-term = "2.9.2"
