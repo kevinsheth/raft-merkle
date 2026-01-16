@@ -313,7 +313,9 @@ fn on_ready(
             }
         };
     // Apply all committed entries.
-    handle_committed_entries(raft_group, ready.take_committed_entries());
+    let committed = ready.take_committed_entries();
+    handle_committed_entries(raft_group, committed.clone());
+    raft_group.commit_entries(&committed);
 
     // Persistent raft logs. It's necessary because in `MerkleNode::advance` we stabilize
     // raft logs to the latest position.
