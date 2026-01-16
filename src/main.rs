@@ -234,7 +234,7 @@ impl Node {
             }
         }
         let raft_group = self.raft_group.as_mut().unwrap();
-        let _ = raft_group.step(msg);
+        raft_group.step(msg);
     }
 }
 
